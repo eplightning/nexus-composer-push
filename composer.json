@@ -1,5 +1,5 @@
 {
-    "name": "elendev/nexus-composer-push",
+    "name": "eplightning/nexus-composer-push",
     "description": "Provide a Push command to composer to push to Nexus repositories",
     "type": "composer-plugin",
     "authors": [
