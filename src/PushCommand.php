@@ -42,6 +42,7 @@ class PushCommand extends BaseCommand
             new InputOption('ignore-dirs', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '<error>DEPRECATED</error> Directories to ignore when creating the zip'),
             new InputOption('ignore-by-git-attributes', null, InputOption::VALUE_NONE, 'Ignore .gitattrbutes export-ignore directories when creating the zip'),
             new InputOption('ignore-by-composer', null, InputOption::VALUE_NONE, 'Ignore composer.json archive-exclude files and directories when creating the zip'),
+            new InputOption('reproducible', null, InputOption::VALUE_NONE, 'Attempt to create reproducible ZIP archive. <strong>WILL</strong> modify all files modification time'),
           ])
           ->setHelp(
               <<<EOT
@@ -86,7 +87,8 @@ EOT
                 $fileName,
                 $subdirectory,
                 $ignoredDirectories,
-                $this->getIO()
+                $this->getIO(),
+                $input->getOption('reproducible')
           );
 
             $url = $this->generateUrl(
@@ -117,7 +119,7 @@ EOT
                   true,
                   IOInterface::VERY_VERBOSE
               );
-            unlink($fileName);
+            // unlink($fileName);
         }
     }
 

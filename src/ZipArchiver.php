@@ -20,7 +20,8 @@ class ZipArchiver
      *               archived. If null, put at the root of the directory.
      * @param array $ignores
      * @param \Composer\IO\IOInterface|null $io
-     *
+     * @param bool $reproducible If true, will attempt to create reproducible zip
+     * 
      * @throws \Exception
      */
     public static function archiveDirectory(
@@ -28,7 +29,8 @@ class ZipArchiver
         $destination,
         $subDirectory = null,
         $ignores = [],
-        $io = null
+        $io = null,
+        $reproducible = false
     ) {
         if (empty($io)) {
             $io = new NullIO();
@@ -47,6 +49,10 @@ class ZipArchiver
 
         foreach ($ignores as $ignore) {
             $finder->notPath($ignore);
+        }
+
+        if ($reproducible) {
+            $finder->sortByName();
         }
 
         $archive = new \ZipArchive();
@@ -86,6 +92,12 @@ class ZipArchiver
                 true,
                 IOInterface::VERY_VERBOSE
             );
+
+            if ($reproducible) {
+                // TODO: Would be nice to do this without modyfing filesystem
+                touch($fileInfo->getRealPath(), 1500000000);
+            }
+
             $archive->addFile($fileInfo->getRealPath(), $zipPath);
         }
 
