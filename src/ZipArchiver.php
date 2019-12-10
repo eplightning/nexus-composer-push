@@ -21,6 +21,7 @@ class ZipArchiver
      * @param array $ignores
      * @param \Composer\IO\IOInterface|null $io
      * @param bool $reproducible If true, will attempt to create reproducible zip
+     * @param int $timestamp If set, will modify files mtime
      * 
      * @throws \Exception
      */
@@ -30,7 +31,8 @@ class ZipArchiver
         $subDirectory = null,
         $ignores = [],
         $io = null,
-        $reproducible = false
+        $reproducible = false,
+        $timestamp = null
     ) {
         if (empty($io)) {
             $io = new NullIO();
@@ -93,9 +95,9 @@ class ZipArchiver
                 IOInterface::VERY_VERBOSE
             );
 
-            if ($reproducible) {
+            if ($reproducible and $timestamp) {
                 // TODO: Would be nice to do this without modyfing filesystem
-                touch($fileInfo->getRealPath(), 1500000000);
+                touch($fileInfo->getRealPath(), $timestamp);
             }
 
             $archive->addFile($fileInfo->getRealPath(), $zipPath);
