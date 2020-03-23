@@ -43,6 +43,7 @@ class PushCommand extends BaseCommand
             new InputOption('ignore-by-git-attributes', null, InputOption::VALUE_NONE, 'Ignore .gitattrbutes export-ignore directories when creating the zip'),
             new InputOption('ignore-by-composer', null, InputOption::VALUE_NONE, 'Ignore composer.json archive-exclude files and directories when creating the zip'),
             new InputOption('reproducible', null, InputOption::VALUE_NONE, 'Attempt to create reproducible ZIP archive. <strong>WILL</strong> modify all files modification time'),
+            new InputOption('timestamp', null, InputArgument::OPTIONAL, 'Timestamp to use if creating reproducible ZIP archive'),
           ])
           ->setHelp(
               <<<EOT
@@ -88,8 +89,9 @@ EOT
                 $subdirectory,
                 $ignoredDirectories,
                 $this->getIO(),
-                $input->getOption('reproducible')
-          );
+                $input->getOption('reproducible'),
+                $this->generateTimestamp($input)
+            );
 
             $url = $this->generateUrl(
                 $input->getOption('url'),
@@ -108,7 +110,7 @@ EOT
                 $fileName,
                 $input->getOption('username'),
                 $input->getOption('password')
-          );
+            );
 
             $this->getIO()
               ->write('Archive correctly pushed to the Nexus server');
@@ -119,8 +121,29 @@ EOT
                   true,
                   IOInterface::VERY_VERBOSE
               );
-            // unlink($fileName);
+            unlink($fileName);
         }
+    }
+
+    /**
+     * Get timestamp to use for reproducible archives
+     * 
+     * @param \Symfony\Component\Console\Input\InputInterface|null $input
+     * 
+     * @return int
+     */
+    private function generateTimestamp(InputInterface $input)
+    {
+        $inputTimestamp = $input->getOption('timestamp');
+
+        if ($inputTimestamp) {
+            return (int) $inputTimestamp;
+        }
+
+        // use version to derive timestamp
+        $version = (int) preg_replace('/[^0-9]/', '', $input->getArgument('version'));
+
+        return 1500000000 + $version;
     }
 
     /**
