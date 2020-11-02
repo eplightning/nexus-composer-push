@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Elendev\NexusComposerPush;
 
 use Composer\Composer;
@@ -11,6 +10,14 @@ use Composer\Plugin\PluginInterface;
 class Plugin implements PluginInterface, Capable
 {
     public function activate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
     {
     }
 
